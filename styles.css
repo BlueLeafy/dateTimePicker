@@ -1,0 +1,266 @@
+/* ROOT */
+:root {
+    --black: 0, 0, 0;
+    --white: 255, 255, 255;
+    --light-01: 249, 249, 249;
+    --gray-01: 108, 117, 125;
+    --dark-01: 26, 26, 26;
+    --dark-02: 16, 16, 16;
+    --dark-03: 39, 39, 39;
+    --dark-04: 51, 51, 51;
+    --blue-01: 0, 123, 255;
+    --red-01: 220, 53, 69;
+    --box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* ANIMATION */
+@keyframes openDown {
+    from {
+        max-height: 0;
+    }
+    to {
+        max-height: 134px;
+    }
+}
+@keyframes closeUp {
+    from {
+        max-height: 134px;
+    }
+    to {
+        max-height: 0;
+    }
+}
+/* body */
+.body {
+    background-color: #e0e0e0;
+}
+/* header */
+.header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+/* theme swtich button */
+.btn {
+    padding: 10px 20px;
+    margin-left: 30px;
+    border-radius: 6px;
+    box-shadow: 0 6px 3px #0000;
+    cursor: pointer;
+}
+
+.btn-switch {
+    background: black;
+    color: white;
+    border: black;
+}
+
+/* dtPicker-content */
+.dtPicker-content {
+    /* display: none; */
+    max-width: 300px;
+    max-height: 1000px;
+    background-color: rgb(var(--white));
+    border: 1px solid rgb(var(--black));
+    box-shadow: var(--box-shadow);
+    overflow: visible;
+    border-radius: 10px;
+    padding: 10px 30px;
+    position: relative;
+}
+
+.dtPicker-content.open {
+    display: block;
+}
+
+/* calendar wrapper */
+.calendar-wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+/* Month and year */
+.calendar-month-year {
+    display: grid;
+    padding: 10px;
+    grid-template-columns: auto auto 1fr;
+    align-items: center;
+}
+
+.calendar-my {
+    display: flex;
+    align-items: center;
+}
+
+.calendar-current-my {
+    margin: 0 5px;
+}
+
+/* MOnths */
+.months-popup {
+    display: none;
+    text-align: center;
+    width: 300px;
+    border-radius: 10px;
+}
+
+.months-popup.open {
+    display: block;
+}
+
+.months-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    padding-left: 0;
+}
+
+.month-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border-radius: 4px;
+    list-style: none;
+}
+
+.month-cell:hover {
+    cursor: pointer;
+    background-color: #f0f0f0;
+}
+
+.current-month {
+    background-color: #f0f0f0 !important;
+}
+
+/* Year scroller */
+.controls-wrapper {
+    display: flex;
+    justify-self: end;
+    align-items: center;
+    gap: 10px;
+}
+
+.arrow {
+    border: solid black;
+    display: inline-block;
+    padding: 3px;
+}
+
+.prev {
+    transform: rotate(135deg);
+    border-width: 0 2px 2px 0;
+}
+
+.currentDate {
+    height: 1px;
+    width: 1px;
+    border-width: 2px;
+    border-radius: 50%;
+}
+
+.next {
+    transform: rotate(-45deg);
+    border-width: 0 2px 2px 0;
+
+}
+
+.prev:hover,
+.next:hover,
+.currentDate:hover {
+    cursor: pointer;
+}
+
+/* Days */
+.calendar-days {
+    display: none;
+}
+
+.calendar-days.open {
+    display: block;
+}
+
+.calendar-days-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    text-align: center;
+    font-weight: bold;
+    padding: 10px;
+    margin: 0;
+}
+
+.calendar-days-header li {
+    list-style: none;
+}
+
+/* Dates */
+.calendar-dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    padding: 10px;
+}
+
+.calendar-dates-list {
+    display: contents;
+}
+
+.calendar-dates-list li {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background-color: rgb(var(--white));
+    border-radius: 4px;
+    list-style: none;
+}
+
+.calendar-dates-list li:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.prev-month-date,
+.next-month-date {
+    color: rgb(var(--gray-01));
+    background-color: #e0e0e0;
+}
+
+.selected-date {
+    background-color: #f0f0f0 !important;
+}
+
+/* TIME */
+.time-container {
+    padding: 0;
+}
+
+.time-toggle {
+    background-color: beige;
+    padding: 10px 30px;
+}
+
+.time-dropdown {
+    display: none;
+    background-color: #e0e0e0;
+    overflow-y: scroll;
+    position: absolute;
+    z-index: 100;
+    width: 300px;
+    height: 0;
+    max-height: 135px;
+    border-radius: 6px;
+    top: calc(100% - 10px);
+    transition: height 2s ease-in-out;
+
+}
+
+.time-dropdown.open {
+    display: block;
+    height: 135px;
+}
+
+.time-option {
+    padding: 8px 30px;
+}
