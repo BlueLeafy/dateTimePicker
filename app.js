@@ -4,6 +4,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const daysName = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
     let currentMonth = new Date().getMonth(); // 0 - 11
     let currentYear = new Date().getFullYear();
+    let selectedMonth = currentMonth;
+    let selectedDate = null; // Store selected date
+    let selectedTime = null; // Store selected time
     let monthsPopupElement;
 
     // Create dt picker wrapper
@@ -28,23 +31,28 @@ document.addEventListener("DOMContentLoaded", function () {
         const { calendarMonth, calendarYear, calendarMonthYear } = monthYearWrapper(calendarWrapper);
 
         const yearsControl = yearScroller(calendarMonthYear);
-        const { calendarDatesList } = createDays(calendarWrapper, currentMonth, currentYear);
-        populateDates(calendarDatesList, currentMonth, currentYear);
+        const { calendarDatesList } = createDays(calendarWrapper, selectedMonth, currentYear);
+        populateDates(calendarDatesList, selectedMonth, currentYear);
 
         monthsPopupElement = monthsPopup(calendarWrapper);
 
         // Highlight current date on intialization
-        highlightCurrentDate(calendarDatesList, currentYear, currentMonth);
+        highlightCurrentDate(calendarDatesList, currentYear, selectedMonth);
+        highlightCurrentMonth();
 
         const calendarDays = document.getElementById("calendarDays");
         calendarDays.classList.add("open");
 
         calendarMonth.addEventListener("click", function () {
             if (!monthsPopupElement.classList.contains("open")) {
-                document.getElementById("calendarCurrentMonth").style.display = "none";
+                document.getElementById("calendarSelectedMonth").style.display = "none";
             }
+
             calendarDays.classList.toggle("open");
             monthsPopupElement.classList.toggle("open");
+
+            // Always highlight current month when pop up
+            highlightCurrentMonth();
         });
 
         // Event listener fir currentYearArrow
@@ -54,13 +62,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Reset to present year
                 currentYear = new Date().getFullYear();
                 // Reset to present month
-                currentMonth = new Date().getMonth();
-                renderCalendar(currentMonth, currentYear); // Render calendar for current month/year
+                selectedMonth = new Date().getMonth();
+                renderCalendar(selectedMonth, currentYear); // Render calendar for current month/year
 
-                // Remove current-month class from all cells
+                // Remove selected-month class from all cells
                 const monthCells = document.querySelectorAll(".month-cell");
                 monthCells.forEach(function (monthCell) {
-                    monthCell.classList.remove("current-month");
+                    monthCell.classList.remove("selected-month");
                 });
             }
         });
@@ -90,11 +98,11 @@ document.addEventListener("DOMContentLoaded", function () {
         calendarMonth.id = "calendarMonth";
         calendarMonthYear.appendChild(calendarMonth);
 
-        const calendarCurrentMonth = document.createElement("div");
-        calendarCurrentMonth.className = "calendar-current-my";
-        calendarCurrentMonth.id = "calendarCurrentMonth";
-        calendarCurrentMonth.innerText = getMonthName(currentMonth);
-        calendarMonth.appendChild(calendarCurrentMonth);
+        const calendarSelectedMonth = document.createElement("div");
+        calendarSelectedMonth.className = "calendar-current-my";
+        calendarSelectedMonth.id = "calendarSelectedMonth";
+        calendarSelectedMonth.innerText = getMonthName(selectedMonth);
+        calendarMonth.appendChild(calendarSelectedMonth);
 
         const calendarYear = document.createElement("div");
         calendarYear.className = "calendar-my";
@@ -128,18 +136,30 @@ document.addEventListener("DOMContentLoaded", function () {
             monthCell.className = "month-cell";
             monthCell.innerText = months[i];
 
-            monthCell.addEventListener("click", function () {
-                currentMonth = i;
+            // Highlight current month on initial load
+            if (i === currentMonth) {
+                monthCell.classList.add("current-month");
+            }
 
-                renderCalendar(currentMonth, currentYear);
+            monthCell.addEventListener("click", function () {
+                // remove selected month on all month cells
+                const monthCells = document.querySelectorAll(".month-cell");
+                monthCells.forEach(function (cell) {
+                    cell.classList.remove("selected-month")
+                })
+
+                // highlight seleted month
+                monthCell.classList.add("selected-month");
+
+                selectedMonth = i;
+
+                renderCalendar(selectedMonth, currentYear);
                 monthsPopup.classList.toggle("open");
                 calendarDays.classList.toggle("open");
 
-                // After clicking on a month, the calendarCurrentMonth is visible
-                document.getElementById("calendarCurrentMonth").style.display = "block";
+                // After clicking on a month, the calendarSelectedMonth is visible
+                document.getElementById("calendarSelectedMonth").style.display = "block";
 
-                // Highlight current month
-                highlightCurrentMonth(currentMonth);
 
             });
 
@@ -151,17 +171,15 @@ document.addEventListener("DOMContentLoaded", function () {
         return monthsPopup;
     }
 
-    function highlightCurrentMonth(currentMonth) {
+    function highlightCurrentMonth() {
         const monthCells = document.querySelectorAll(".month-cell");
 
         monthCells.forEach((monthCell, index) => {
-            monthCell.classList.remove("current-month");
 
             if (index === currentMonth) {
                 monthCell.classList.add("current-month");
-            } else {
-                monthCell.classList.remove("current-month");
             }
+
         });
     }
 
@@ -194,12 +212,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 currentYear--;
                 updateYearDisplay();
             } else {
-                currentMonth--;
-                if (currentMonth < 0) {
-                    currentMonth = 11;
+                selectedMonth--;
+                if (selectedMonth < 0) {
+                    selectedMonth = 11;
                     currentYear--;
                 }
-                renderCalendar(currentMonth, currentYear);
+                renderCalendar(selectedMonth, currentYear);
             }
         });
 
@@ -208,12 +226,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 currentYear++;
                 updateYearDisplay();
             } else {
-                currentMonth++;
-                if (currentMonth > 11) {
-                    currentMonth = 0;
+                selectedMonth++;
+                if (selectedMonth > 11) {
+                    selectedMonth = 0;
                     currentYear++;
                 }
-                renderCalendar(currentMonth, currentYear);
+                renderCalendar(selectedMonth, currentYear);
             }
         });
 
@@ -225,21 +243,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 const currentMonthIndex = new Date().getMonth();
                 // Put back month to today
                 const monthsCell = document.querySelectorAll(".month-cell");
-                monthsCell.forEach(function (monthCell) {
-                    if (monthCell.classList.contains("current-month")) {
-                        monthCell.classList.remove("current-month");
+                monthsCell.forEach(function (monthCell, index) {
+                    monthCell.classList.remove("selected-month");
+
+                    // Highlight the current month
+                    if (index === currentMonthIndex) {
+                        monthCell.classList.add("current-month");
                     }
                 });
 
-                // Add the class to the current month cell
-                monthsCell[currentMonthIndex].classList.add("current-month");
-
             } else {
                 currentYear = new Date().getFullYear();
-                currentMonth = new Date().getMonth();
+                selectedMonth = new Date().getMonth();
             }
             updateYearDisplay();
-        })
+        });
 
         return yearControl;
     }
@@ -250,9 +268,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function renderCalendar(month, year) {
-        const calendarCurrentMonth = document.getElementById("calendarCurrentMonth");
+        const calendarSelectedMonth = document.getElementById("calendarSelectedMonth");
         const calendarCurrentYear = document.getElementById("calendarCurrentYear");
-        calendarCurrentMonth.innerText = getMonthName(month);
+        calendarSelectedMonth.innerText = getMonthName(month);
         calendarCurrentYear.innerText = year;
 
         const calendarDatesList = document.getElementById("calendarDatesList");
@@ -334,24 +352,47 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function highlightCurrentDate(calendarDatesList, year, month) {
         const dayCells = calendarDatesList.querySelectorAll("li");
+
         dayCells.forEach(function (day) {
-            day.addEventListener("click", function (event) {
+            day.classList.remove("current-date");
+        });
+
+        const today = new Date();
+        const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+        // highlight current date
+        if (isCurrentMonth) {
+            dayCells.forEach((day) => {
+                if (parseInt(day.innerText) === today.getDate()) {
+                    day.classList.add("current-date");
+                }
+            });
+        }
+
+        // Event listener for date selection
+        dayCells.forEach((day) => {
+            day.addEventListener("click", (event) => {
                 const dayNumber = parseInt(event.target.dataset.date);
-                const clickedDate = new Date(year, month, dayNumber);
-                const dayIndex = clickedDate.getDay();
+                const selectedDate = new Date(year, month, dayNumber);
+                const dayIndex = selectedDate.getDay();
                 const dayName = daysName[dayIndex];
+                const monthName = getMonthName(month);
+                const formattedDate = `${dayNumber} ${dayName} ${monthName} ${year}`
 
-                // Remove 'selected-date' class from all other elements
-                dayCells.forEach(function (cell) {
-                    cell.classList.remove("selected-date");
-                })
+                // Remove selected-date class from all cells
+                dayCells.forEach((day) => {
+                    day.classList.remove("selected-date");
+                });
 
-                // Add 'selected-date' class to the clicked element
+                // Add selected date class to selected element
                 day.classList.add("selected-date");
 
-                console.log(event.target.dataset.date, dayName);
+                updateInputValue(formattedDate);
+
+                console.log(formattedDate);
+
             })
-        });
+        })
     }
 
     function createTime(dtPickerContent) {
@@ -362,13 +403,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const timeToggle = document.createElement("div");
         timeToggle.className = "time-toggle";
         timeToggle.id = "timeToggle";
-        timeToggle.innerText = "Time";
+        timeToggle.innerText = "Pick a time";
         timeContainer.appendChild(timeToggle);
+
+        const timeDropdownWrapper = document.createElement("div");
+        timeDropdownWrapper.className = "time-dropdown-wrapper";
+        timeDropdownWrapper.id = "timeDropdownWrapper";
+        timeContainer.appendChild(timeDropdownWrapper);
 
         const timeDropdown = document.createElement("div");
         timeDropdown.className = "time-dropdown";
         timeDropdown.id = "timeDropdown";
-        timeContainer.appendChild(timeDropdown);
+        timeDropdownWrapper.appendChild(timeDropdown);
 
         for (let hour = 0; hour < 24; hour++) {
             for (let minute = 0; minute < 60; minute += 30) {
@@ -382,16 +428,90 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         timeToggle.addEventListener("click", function () {
-            timeDropdown.classList.toggle("open");
-
-            // when it opens change inenrText of the timeToggle
-            if (timeDropdown.classList.contains("open")) {
-                // Add the time selecte into innerText
-                console.log(timeOption.dataset.time);
-            }
+            timeDropdownWrapper.classList.toggle("open");
+            // Optionally, you can add logic to update the toggle text or other state changes
         });
+
+        timeOptionHandler();
 
         return timeContainer;
     }
 
+    function timeOptionHandler() {
+        const timeOptions = document.querySelectorAll(".time-option");
+        timeOptions.forEach((timeOption) => {
+            timeOption.addEventListener("click", () => {
+                selectedTime = timeOption.getAttribute("data-time");
+                updateInputValue();
+            })
+        })
+    }
+
+    function formatTime(timeString) {
+        const [hour, minute] = timeString.split(':').map(Number);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const formattedHour = hour % 12 || 12;
+        return `${String(formattedHour).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${ampm}`;
+    }
+
+    // Issue with this!!!!
+    function updateInputValue(formattedDate = null, timeString = null) {
+
+        // Use the stored date if no new date is passed
+        if (formattedDate) {
+            selectedDate = formattedDate;
+        } else {
+            formattedDate = selectedDate;
+        }
+
+        // Use the stored time if no new time is passed
+        if (timeString) {
+            selectedTime = timeString;
+        } else {
+            timeString = selectedTime;
+        }
+
+        let formattedTimeValue = timeString ? formatTime(timeString) : '';
+
+        dtPickerInput.value = `${formattedDate}${formattedTimeValue ? ` ${formattedTimeValue}` : ''}`;
+    }
+
+    function openDtPickerhandler() {
+        const input = document.getElementById("dtPickerInput");
+        const dtPickerContent = document.getElementById("dtPickerContent"); // Move this line up
+        const calendarWrapper = dtPickerContent.querySelector(".calendar-wrapper");
+    
+        input.addEventListener("click", function () {
+            if (dtPickerContent.classList.contains("open")) {
+                // Close picker smoothly
+                calendarWrapper.style.opacity = 0;
+                setTimeout(() => {
+                    // Collapse the container
+                    dtPickerContent.classList.remove("open");
+                }, 300); // Wait for the inner transition to finish
+    
+                setTimeout(() => {
+                    dtPickerContent.style.maxHeight = "0"; // Collapse height
+                    dtPickerContent.style.visibility = "hidden"; // Finally hide visibility
+                }, 600);
+            } else {
+                // Open picker setting display to block
+                dtPickerContent.style.visibility = "visible"; // Finally make visible
+                dtPickerContent.classList.add("open");
+                setTimeout(() => {
+                    // Expand height
+                    dtPickerContent.style.maxHeight = "1000px";
+                    calendarWrapper.style.opacity = 1; // Fade in inner content
+                }, 10); // Small delay to allow the display change to take effect
+            }
+        });
+    }
+
+    // Empty input field everytime I refresh page
+    window.onload = function() {
+        const dtPickerInput = document.getElementById("dtPickerInput");
+        dtPickerInput.value = "";
+    }
+    
+    openDtPickerhandler();
 });

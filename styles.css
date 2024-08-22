@@ -1,18 +1,42 @@
 /* ROOT */
 :root {
-    --black: 0, 0, 0;
-    --white: 255, 255, 255;
-    --light-01: 249, 249, 249;
-    --gray-01: 108, 117, 125;
-    --dark-01: 26, 26, 26;
-    --dark-02: 16, 16, 16;
-    --dark-03: 39, 39, 39;
-    --dark-04: 51, 51, 51;
-    --blue-01: 0, 123, 255;
-    --red-01: 220, 53, 69;
-    --box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+    --gray-01: #D6DAE0;
+    --gray-02: #FDFDFD;
+    --gray-03: #f0f0f0;
+    --blue-01: #6262ff;
+    --black: #000;
+    --white: #fff;
+    --bd-radius-4: 4px;
+    --bd-radius-6: 6px;
+    --bd-radius-10: 10px;
+    --bx-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.2), 0 5px 10px 0 rgba(0, 0, 0, 0.1);
 }
 
+/* DARK MODE */
+body.dark-mode {
+    --gray-01: rgb(13, 17, 23);
+    --gray-02: transparent;
+    --gray-03: #333;
+    --blue-01: #3A3A3A;
+    --black: #f0f0f0;
+    --white: #000;
+}
+
+body.dark-mode .dtPicker-input, body.dark-mode .dtPicker-content{
+    border: 1px solid var(--gray-03);
+}
+body.dark-mode .time-dropdown-wrapper {
+    background-color: var(--gray-01);
+}
+body.dark-mode .prev-month-date,
+body.dark-mode .next-month-date {
+    color: rgba(240, 240, 240, 0.5);
+}
+body.dark-mode .current-date, 
+body.dark-mode .current-month{
+    background-color: #6262ff !important; 
+    color: white;
+}
 /* ANIMATION */
 @keyframes openDown {
     from {
@@ -30,9 +54,22 @@
         max-height: 0;
     }
 }
+/* FONT */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
 /* body */
 .body {
-    background-color: #e0e0e0;
+    background-color: var(--gray-01);
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--black);
+    /* center on screen */
+    padding: 100px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 /* header */
 .header {
@@ -44,39 +81,66 @@
 .btn {
     padding: 10px 20px;
     margin-left: 30px;
-    border-radius: 6px;
-    box-shadow: 0 6px 3px #0000;
+    border-radius: var(--bd-radius-6);
+    box-shadow: var(--bx-shadow);
     cursor: pointer;
 }
 
 .btn-switch {
-    background: black;
-    color: white;
-    border: black;
+    background: var(--black);
+    color: var(--white);
+    border: var(--black);
+}
+/* dtPicker input */
+.dtPicker-input {
+    border-radius: var(--bd-radius-6);
+    border: 1px solid var(--gray-02);
+    box-shadow: va(--bx-shadow);
+    padding: 10px;
+    margin-bottom: 6px;
+    width: 345px;
+    background-color: var(--gray-02);
+    color: var(--black);
+    cursor: pointer;
 }
 
 /* dtPicker-content */
 .dtPicker-content {
-    /* display: none; */
-    max-width: 300px;
-    max-height: 1000px;
-    background-color: rgb(var(--white));
-    border: 1px solid rgb(var(--black));
-    box-shadow: var(--box-shadow);
-    overflow: visible;
-    border-radius: 10px;
-    padding: 10px 30px;
+    visibility: hidden; /* Initially hidden */
+    opacity: 0; /* Initially transparent */
+    max-width: 345px;
+    max-height: 0; /* Initially collapsed */
+    background-color: var(--gray-02);
+    box-shadow: var(--bx-shadow);
+    overflow: hidden; /* Prevent content overflow during transition */
+    border-radius: var(--bd-radius-10);
+    padding: 1rem;
+    z-index: 1;
     position: relative;
+    border: 1px solid var(--gray-02);
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0s 0.3s; /* Delay visibility change */
 }
 
+/* When opened */
 .dtPicker-content.open {
-    display: block;
+    visibility: visible; /* Make visible */
+    opacity: 1; /* Fully opaque */
+    max-height: 1000px; /* Expand height */
+    overflow: visible;
+    transition-delay: 0s, 0s, 0s; /* No delay for the first two, instant visibility */
 }
 
 /* calendar wrapper */
 .calendar-wrapper {
     width: 100%;
     height: 100%;
+    opacity: 0; /* Initially transparent */
+    transition: opacity 0.3s ease-in-out; /* Fade in/out */
+}
+
+/* Fade in the calendar wrapper when dtPicker-content is open */
+.dtPicker-content.open .calendar-wrapper {
+    opacity: 1; /* Fully opaque */
 }
 
 /* Month and year */
@@ -94,6 +158,8 @@
 
 .calendar-current-my {
     margin: 0 5px;
+    font-weight: 500;
+    cursor: pointer;
 }
 
 /* MOnths */
@@ -101,7 +167,7 @@
     display: none;
     text-align: center;
     width: 300px;
-    border-radius: 10px;
+    border-radius: var(--bd-radius-10);
 }
 
 .months-popup.open {
@@ -120,19 +186,21 @@
     justify-content: center;
     align-items: center;
     padding: 10px;
-    border-radius: 4px;
+    border-radius: var(--bd-radius-4);
     list-style: none;
 }
 
 .month-cell:hover {
     cursor: pointer;
-    background-color: #f0f0f0;
+    background-color: var(--gray-03);
 }
 
 .current-month {
-    background-color: #f0f0f0 !important;
+    background-color: var(--blue-01) !important;
 }
-
+.selected-month {
+    background-color: var(--gray-03);
+}
 /* Year scroller */
 .controls-wrapper {
     display: flex;
@@ -142,7 +210,7 @@
 }
 
 .arrow {
-    border: solid black;
+    border: solid var(--black);
     display: inline-block;
     padding: 3px;
 }
@@ -198,7 +266,7 @@
 .calendar-dates {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+    gap: 3px;
     padding: 10px;
 }
 
@@ -210,57 +278,84 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
-    background-color: rgb(var(--white));
-    border-radius: 4px;
+    padding: 0px;
+    background-color: transparent;
+    border-radius: var(--bd-radius-6);
+    width: 2.25rem;
+    height: 2.25rem;
     list-style: none;
+    font-weight: 500;
 }
 
 .calendar-dates-list li:hover {
-    background-color: #f0f0f0;
+    background-color: var(--gray-03);
     cursor: pointer;
 }
 
 .prev-month-date,
 .next-month-date {
-    color: rgb(var(--gray-01));
-    background-color: #e0e0e0;
+    color: var(--gray-01);
+    background-color: transparent;
+}
+
+.current-date {
+    background-color: var(--blue-01) !important;
+    color: var(--white);
 }
 
 .selected-date {
-    background-color: #f0f0f0 !important;
+    background-color: var(--gray-03) !important;
 }
 
 /* TIME */
 .time-container {
     padding: 0;
+    position: relative;
 }
 
 .time-toggle {
-    background-color: beige;
     padding: 10px 30px;
+    cursor: pointer;
+    display: block;
+    border-radius: var(--bd-radius-6);
+}
+.time-toggle:hover {
+    background-color: var(--gray-03);
+}
+
+.time-dropdown-wrapper {
+    position: absolute;
+    background-color: var(--gray-02);
+    width: 100%;
+    max-height: 0px;
+    overflow: hidden;
+    border-radius: var(--bd-radius-6);
+    display: block;
+    z-index: 9999;
+    transition: max-height .2s ease-in-out, border 250ms normal;
 }
 
 .time-dropdown {
-    display: none;
-    background-color: #e0e0e0;
     overflow-y: scroll;
-    position: absolute;
-    z-index: 100;
-    width: 300px;
-    height: 0;
+    scroll-snap-type: y mandatory;
+    scroll-padding-top: 0px;
+    scroll-snap-align: start none;
+    width: 100%;
+    height: 100%;
     max-height: 135px;
-    border-radius: 6px;
-    top: calc(100% - 10px);
-    transition: height 2s ease-in-out;
-
+    border-radius: var(--bd-radius-6);
+    
 }
 
-.time-dropdown.open {
-    display: block;
-    height: 135px;
+.time-dropdown-wrapper.open {
+    max-height: 120px;
+    border: 1px solid var(--gray-03);
 }
 
 .time-option {
     padding: 8px 30px;
+    cursor: pointer;
+}
+.time-option:hover {
+    background-color: var(--gray-03);
 }

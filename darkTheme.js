@@ -1,17 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-    themeSwitchHandler();
-});
-
-// Switch theme
-function themeSwitchHandler() {
+       // Toogle button
     const btnSwitch = document.getElementById("btnSwitch");
-    btnSwitch.addEventListener("click", function (event) {
-        const body = document.querySelector(".body");
-        const dtPickerContent = document.getElementById("dtPickerContent");
 
-        body.classList.toggle("dark");
-        dtPickerContent.classList.toggle("dark");
-        btnSwitch.classList.toggle("dark");
-
-    })
-}
+    btnSwitch.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+    });
+});
